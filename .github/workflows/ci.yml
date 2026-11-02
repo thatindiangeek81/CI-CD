@@ -19,3 +19,27 @@ jobs:
           java-version: '17'
       - name: Compile
         run: javac Calculator.java
+      - name: Upload compiled class
+        uses: actions/upload-artifact@v4
+        with:
+          name: calculator-class
+          path: Calculator.class
+          retention-days: 1
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Download compiled class
+        uses: actions/download-artifact@v4
+        with:
+          name: calculator-class
+      - name: Test addition
+        run: |
+          result=$(java Calculator 3 + 4)
+          echo "Got: $result"
+          [ "$result" = "7" ]
